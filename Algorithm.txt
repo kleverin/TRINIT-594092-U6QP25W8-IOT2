@@ -1,0 +1,288 @@
+#include <iostream>
+
+using namespace std;
+
+int main() 
+{
+    int WN, ES, SN, NS, WE, EW;
+    int timer1=30, timer2=20, timer3=20, sturn, sv, sh;
+    int status, choice, t=0,v=0,h=0, flag=0;
+   
+    do{
+    
+    cout << "number of cars travelling(collected using sensors in the nodes)\n"; 
+    cout << "west to north : ";  //cars coming from
+    cin>>WN;
+    cout << "east to south: ";
+    cin>>ES;
+    cout << "south to north: ";
+    cin>>SN;
+    cout << "north to south: ";
+    cin>>NS;
+    cout << "west to east: ";
+    cin>>WE;
+    cout << "east to west: ";
+    cin>>EW;
+    cout<<"\n\n\ncars exceeding the time limit monitored with cameras";
+    if(WN!=0 || ES!=0)
+    {
+        t=1;
+        cout<<"\n\ncars exceeding turning time limit? (1 or 0): ";
+        cin>>sturn;
+        if(sturn==1)
+        {
+           timer1+=15;
+        }
+        if(WN>10||ES>10)
+        {
+            timer1+=15;
+            flag++;
+        }
+    }
+    
+    else
+    {
+        timer1=0;
+        timer2+=15;
+        timer3+=15;
+    }
+    
+    if(SN!=0 || NS!=0)
+    {
+        v=1;
+        cout<<"cars exceeding vertical time limit? (1 or 0): ";
+        cin>>sv;
+        if(sv==1)
+        {
+           timer2+=10;
+        }
+        if(SN>10||NS>10)
+        {
+            timer2+=15;
+            flag++;
+        }
+    }
+    else
+    {
+        timer2=0;
+        timer1+=10;
+        timer3+=10;
+    }
+    if(WE!=0 || EW!=0)
+    {
+        h=1;
+        cout<<"cars exceeding horizontal time limit? (1 or 0:) ";
+        cin>>sh;
+        if(sh==1)
+        {
+           timer3+=10;
+        }
+        if(WE>10||EW>10)
+        {
+            timer3+=15;
+            flag++;
+        }
+    }
+        else
+    {
+        timer3=0;
+        timer1+=10;
+        timer2+=10;
+    }
+
+    cout<<"\ntraffic schedule: \n\n";
+    
+    if(t==1)
+    {
+        cout<<"turning status: required";
+    }
+    else
+    {
+        cout<<"turning status: not required";
+    }
+    cout<<endl;
+    if(v==1)
+    {
+        cout<<"vertical status: required";
+    }
+    else
+    {
+        cout<<"vertical status: not required";
+    }
+    cout<<endl;
+    if(h==1)
+    {
+        cout<<"horizontal status: required";
+    }
+    else
+    {
+        cout<<"horizontal status: not required";
+    }
+    
+    cout<<"\nduration of MODE 1 (turning) : "<<timer1<<" seconds"; 
+    cout<<"\nduration of MODE 2 (vertical) : "<<timer2<<" seconds";
+    cout<<"\nduration of MODE 3 (horizontal) : "<<timer3<<" seconds";
+    
+    if(t==0||v==0||h==0)
+    {
+        cout<<"\ncompensations have been made for empty paths";
+    }
+    else
+    {
+        cout<<"\nno compensations were required\n\n";
+    }
+    
+    if(sturn==0&&sv==0&&sh==0)
+    {
+        cout<<"\nno delays in schedule";
+    }
+    else
+    {
+        cout<<"schedule shift was required due to delay";
+    }
+     if(flag!=0)
+    {
+        cout<<"\ntimers extended due to more flow";
+    }
+    else
+    {
+        cout<<"\nno timers extended (expected flow)";
+    }
+    
+    int SC1,SC2;
+    float C1NN[3],C1NS[3],C1NW[3],C1NE[3],C1NC[3];
+    /*4 nodes in each sides for NN,NS,NW,NE,NC
+    NN: NODE NORTH
+    NS: NODE SOUTH
+    NE: NODE EAST
+    NW: NODE WEST
+    NC: NODE CORNERS NEAR THE MIDDLE OF JUNCTION
+    VALUES ARE MAPPED FROM 0 TO 1 ACCORDING TO DISTANCE FORM EACH NODE
+    [1]- enter junction
+    [2]- enter junction middle
+    [3]- exit junction
+    [4]- exit junction middle
+    
+    for nodes near corner(NC)
+    [1]- corner top north-west
+    [2]- corner north-east
+    [3]- corner south-west
+    [4]- corner south-east 
+    
+    if a car is in the west side, the middle node of the side is always activated, so it is used to determine side 
+    */
+    
+    cout<<"\n DISTANCE DATA FROM NODES TO CAR 1";
+    for(int i=0;i<4;i++)
+    {
+      cout<<"NN["<<i+1<<"]";
+      cin>>C1NN[i];
+      if(C1NN[1]!=0||C1NN[3]!=0)
+      {
+          SC1=1;
+      }
+    }
+    
+    for(int i=0;i<4;i++)
+    {
+      cout<<"NS["<<i+1<<"]";
+      cin>>C1NS[i];
+      if(C1NS[1]!=0||C1NS[3]!=0)
+      {
+          SC1=2;
+      }
+    }
+    
+    for(int i=0;i<4;i++)
+    {
+      cout<<"NW["<<i+1<<"]";
+      cin>>C1NW[i];
+      if(C1NW[1]!=0||C1NW[3]!=0)
+      {
+          SC1=3;
+      }
+    }
+    
+    for(int i=0;i<4;i++)
+    {
+      cout<<"NE["<<i+1<<"]";
+      cin>>C1NE[i];
+      if(C1NE[1]!=0||C1NE[3]!=0)
+      {
+          SC1=4;
+      }
+    }
+    for(int i=0;i<4;i++)
+    {
+      cout<<"NC["<<i+1<<"]";
+      cin>>C1NC[i];
+      if(C1NC[1]>0.8||C1NC[3]>=0.8)
+      {
+          SC1=5;
+      }
+    }
+    
+    float C2NN[3],C2NS[3],C2NW[3],C2NE[3],C2NC[3];
+
+    
+    cout<<"\n DISTANCE DATA FROM NODES TO CAR 2";
+    for(int i=0;i<4;i++)
+    {
+      cout<<"NN["<<i+1<<"]";
+      cin>>C2NN[i];
+      if(C2NN[1]!=0||C2NN[3]!=0)
+      {
+          SC2=1;
+      }
+    }
+    
+    for(int i=0;i<4;i++)
+    {
+      cout<<"NS["<<i+1<<"]";
+      cin>>C2NS[i];
+      if(C2NS[1]!=0||C2NS[3]!=0)
+      {
+          SC2=2;
+      }
+    }
+    
+    for(int i=0;i<4;i++)
+    {
+      cout<<"NW["<<i+1<<"]";
+      cin>>C2NW[i];
+      if(C2NW[1]!=0||C2NW[3]!=0)
+      {
+          SC2=3;
+      }
+    }
+    
+    for(int i=0;i<4;i++)
+    {
+      cout<<"NE["<<i+1<<"]";
+      cin>>C2NS[i];
+      if(C2NS[1]!=0||C2NS[3]!=0)
+      {
+          SC2=4;
+      }
+    }
+    for(int i=0;i<4;i++)
+    {
+      cout<<"NC["<<i+1<<"]";
+      cin>>C2NC[i];
+      if(C2NC[1]>0.8||C2NC[3]>=0.8)
+      {
+          SC2=5;
+      }
+    }
+    
+    if(SC1!=SC2)
+    cout<<"both cars are in same lane, adjust speed to slow down";
+    else
+    cout<<"different lanes";
+    
+    
+    cout<<"\n\ncontinue with next cycle?";
+    cin>>choice;
+    }while(choice==1);
+    return 0;
+}

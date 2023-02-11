@@ -1,0 +1,43 @@
+import time
+import math
+
+class Vehicle:
+    def __init__(self, name, lat, lon, speed, heading):
+        self.name = name
+        self.lat = lat
+        self.lon = lon
+        self.speed = speed
+        self.heading = heading
+        self.x, self.y = self.convert_to_cartesian(lat, lon)
+
+    def convert_to_cartesian(self, lat, lon):
+        R = 6371
+        x = R * math.cos(lat) * math.cos(lon)
+        y = R * math.cos(lat) * math.sin(lon)
+        return x, y
+
+    def update_position(self, dt):
+        self.x = self.x + self.speed * dt * math.cos(self.heading)
+        self.y = self.y + self.speed * dt * math.sin(self.heading)
+        self.lat, self.lon = self.convert_to_cartesian_to_lat_lon(self.x, self.y)
+
+    def convert_cartesian_to_lat_lon(self, x, y):
+        R = 6371
+        lat = math.atan2(y, x)
+        lon = math.atan2(y, x)
+        return lat, lon
+
+def check_collision(v1, v2, dt):
+    v1.update_position(dt)
+    v2.update_position(dt)
+    distance = math.sqrt((v1.x - v2.x) ** 2 + (v1.y - v2.y) ** 2)
+    if distance <= 2:
+        print(f"Collision detected between {v1.name} and {v2.name}")
+
+# example usage
+vehicle1 = Vehicle("Vehicle 1", 37.7749, -122.4194, 10, 45)
+vehicle2 = Vehicle("Vehicle 2", 37.7880, -122.3997, 20, 135)
+
+while True:
+    check_collision(vehicle1, vehicle2, 1)
+    time.sleep(1)
